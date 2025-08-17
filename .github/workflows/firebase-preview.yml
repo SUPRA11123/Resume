@@ -29,7 +29,7 @@ jobs:
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
           firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
-          projectId: '${{ vars.FIREBASE_PROJECT_ID }}'
+          projectId: resume-s031097
           # No channelId means the action auto-creates a unique preview per PR
 
       - name: Comment preview URL on PR
