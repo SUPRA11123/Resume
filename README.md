@@ -4,7 +4,7 @@
 [![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=061a1f)](https://react.dev/)
 [![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3.x-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
 [![Firebase Hosting](https://img.shields.io/badge/Firebase%20Hosting-Live-FFCA28?logo=firebase&logoColor=000)](https://firebase.google.com/docs/hosting)
-[![Deploy](https://github.com/USER/REPO/actions/workflows/firebase-deploy.yml/badge.svg)](https://github.com/USER/REPO/actions/workflows/firebase-deploy.yml)
+[![Deploy](https://github.com/SUPRA11123/resume/actions/workflows/firebase-deploy.yml/badge.svg)](https://github.com/SUPRA11123/resume/actions/workflows/firebase-deploy.yml)
 
 A clean, fast portfolio built with **Vite + React + TailwindCSS**, showcasing Full-Stack, Data Science, and QA work. Deployed on **Firebase Hosting**, with optional **GitHub Actions** for one-click CI/CD.
 
