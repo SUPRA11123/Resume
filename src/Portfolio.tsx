@@ -18,9 +18,16 @@ import {
 } from "lucide-react";
 
 /**
- * Portfolio.tsx — multilingual + animated background + scroll progress
+ * Portfolio.tsx — Restyle theme, full‑screen mobile menu, animated background, progress bar, i18n
  *
- * Update: Qualifications is a single nav section that contains tabs: Education, Certifications, Thesis, Skills, References.
+ * This pass applies a cohesive token‑driven style inspired by the linked site:
+ * - Gradient background with slow hue animation
+ * - Glass cards (subtle blur, soft borders, gentle shadows)
+ * - Gradient CTAs with focus rings
+ * - Full‑screen mobile nav drawer
+ * - Scroll progress bar under the header
+ * - EN/DE language toggle, saved to localStorage
+ * - Hero subtitle split lines with location + work permit
  */
 
 // ---- Central links ----
@@ -52,8 +59,8 @@ const dict = {
     },
     heroTitle: (
       <>
-        Building reliable products across <span className="text-indigo-600">Full‑Stack</span>,
-        <br className="hidden md:block" /> <span className="text-indigo-600">Data Science</span> & QA
+        Building reliable products across <span className="text-accent">Full‑Stack</span>,
+        <br className="hidden md:block" /> <span className="text-accent">Data Science</span> & QA
       </>
     ),
     heroIntro1:
@@ -90,8 +97,8 @@ const dict = {
     },
     heroTitle: (
       <>
-        Zuverlässige Produkte in <span className="text-indigo-600">Full‑Stack</span>,
-        <br className="hidden md:block" /> <span className="text-indigo-600">Data Science</span> & QA entwickeln
+        Zuverlässige Produkte in <span className="text-accent">Full‑Stack</span>,
+        <br className="hidden md:block" /> <span className="text-accent">Data Science</span> & QA entwickeln
       </>
     ),
     heroIntro1:
@@ -129,8 +136,8 @@ const Chip = ({ children, active = false, onClick }: { children: React.ReactNode
     className={cn(
       "px-3 py-1 rounded-full border text-sm transition",
       active
-        ? "bg-indigo-600 text-white border-indigo-600 shadow"
-        : "text-gray-700 dark:text-gray-200 border-gray-300/70 dark:border-gray-700/70 hover:bg-gray-50 dark:hover:bg-white/5"
+        ? "bg-[var(--accent)] text-white border-[var(--accent)] shadow"
+        : "text-gray-700 dark:text-gray-200 border-white/40 dark:border-white/10 backdrop-blur hover:bg-white/50 dark:hover:bg-white/5"
     )}
   >
     {children}
@@ -146,7 +153,7 @@ const Section = ({ id, title, children }: { id: string; title: React.ReactNode; 
         whileInView={{ opacity: 1, x: 0 }}
         viewport={{ once: true, amount: 0.4 }}
         transition={{ duration: reduceMotion ? 0 : 0.5 }}
-        className="text-3xl md:text-4xl font-bold tracking-tight mb-8"
+        className="text-3xl md:text-4xl font-semibold tracking-tight mb-8"
       >
         {title}
       </motion.h2>
@@ -193,10 +200,10 @@ function useCommandPalette(actions: { id: string; label: string; run: () => void
           role="dialog"
           aria-modal="true"
           aria-label="Command palette"
-          className="mx-auto mt-24 max-w-xl rounded-2xl bg-white dark:bg-[#0f0f12] border border-gray-200 dark:border-gray-800 shadow-xl overflow-hidden"
+          className="mx-auto mt-24 max-w-xl rounded-2xl bg-[var(--card)] text-[var(--fg)] border border-white/30 dark:border-white/10 shadow-xl backdrop-blur overflow-hidden"
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="flex items-center gap-2 px-4 pt-3 pb-2 border-b border-gray-200 dark:border-gray-800">
+          <div className="flex items-center gap-2 px-4 pt-3 pb-2 border-b border-white/30 dark:border-white/10">
             <Search className="h-4 w-4" aria-hidden={true} />
             <input
               autoFocus
@@ -216,7 +223,7 @@ function useCommandPalette(actions: { id: string; label: string; run: () => void
                     a.run();
                     setOpen(false);
                   }}
-                  className="w-full text-left px-4 py-3 hover:bg-gray-50 dark:hover:bg-white/5"
+                  className="w-full text-left px-4 py-3 hover:bg-white/40 dark:hover:bg-white/5"
                 >
                   {a.label}
                 </button>
@@ -245,7 +252,7 @@ export default function Portfolio() {
   }, [lang]);
   const t = dict[lang];
 
-  // ---- Nav config (single Qualifications item) ----
+  // ---- Nav config ----
   const nav = [
     { href: "#home", label: t.nav.home },
     { href: "#experience", label: t.nav.experience },
@@ -261,7 +268,7 @@ export default function Portfolio() {
   const [showTop, setShowTop] = useState(false);
   const [progress, setProgress] = useState(0);
 
-  // ---- Load elegant font ----
+  // ---- Load font ----
   useEffect(() => {
     const l1 = document.createElement("link");
     l1.rel = "preconnect";
@@ -412,25 +419,23 @@ export default function Portfolio() {
 
   return (
     <div
-      className="min-h-screen text-gray-900 dark:text-gray-100"
+      className="min-h-screen text-[var(--fg)]"
       style={{
         fontFamily:
           '"Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji"',
       }}
     >
-      {/* ==== Animated soothing background ==== */}
+      {/* ==== Theme tokens + animated background ==== */}
       <style>{`
-        @keyframes floaty{0%{transform:translate(0,0) scale(1)}50%{transform:translate(-14px,18px) scale(1.05)}100%{transform:translate(0,0) scale(1)}}
+        :root{--bg1:#0e0f13;--bg2:#101522;--fg:#0f172a;--card:rgba(255,255,255,0.75);--accent:#6366f1;--ring:rgba(99,102,241,.35)}
+        :root.dark{--bg1:#0a0a0c;--bg2:#0f1220;--fg:#e5e7eb;--card:rgba(15,15,18,0.7);--accent:#8b5cf6;--ring:rgba(139,92,246,.4)}
+        .text-accent{color:var(--accent)}
+        @keyframes hue {0%{filter:hue-rotate(0deg)} 100%{filter:hue-rotate(360deg)}}
+        body::before{content:"";position:fixed;inset:0;z-index:-2;background:radial-gradient(1200px 600px at 10% -10%, rgba(99,102,241,.25), transparent),radial-gradient(1000px 600px at 110% 10%, rgba(56,189,248,.18), transparent),linear-gradient(180deg,var(--bg1),var(--bg2));animation:hue 60s linear infinite}
       `}</style>
-      <div aria-hidden={true} className="fixed inset-0 -z-10">
-        <div className="absolute -top-24 -right-24 h-[28rem] w-[28rem] rounded-full bg-indigo-400/20 blur-3xl animate-[floaty_26s_ease-in-out_infinite]" />
-        <div className="absolute top-1/3 -left-24 h-[26rem] w-[26rem] rounded-full bg-teal-300/20 blur-3xl animate-[floaty_32s_ease-in-out_infinite]" />
-        <div className="absolute bottom-0 left-1/4 right-1/4 h-32 bg-gradient-to-r from-indigo-200/30 via-teal-200/20 to-transparent" />
-        <div className="absolute inset-0 bg-white/60 dark:bg-[#0b0b0d]/60" />
-      </div>
 
       {/* ==== Top Nav ==== */}
-      <header className="sticky top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-white/70 dark:supports-[backdrop-filter]:bg-black/30 bg-white/80 dark:bg-black/40 border-b border-gray-200/60 dark:border-gray-800/60">
+      <header className="sticky top-0 z-50 backdrop-blur bg-white/70 dark:bg-[#0b0b0d]/60 border-b border-white/30 dark:border-white/10">
         <div className="max-w-6xl mx-auto flex items-center gap-3 px-6 h-16" role="navigation" aria-label="Primary">
           <a href="#home" className="font-semibold tracking-tight text-xl md:text-2xl">Suprabhat</a>
 
@@ -441,26 +446,26 @@ export default function Portfolio() {
                 href={n.href}
                 onClick={(e) => onNavClick(e, n.href)}
                 className={cn(
-                  "px-3 py-2 rounded-lg transition hover:opacity-90 focus:outline-none focus-visible:ring-2 ring-indigo-600",
-                  active === n.href.slice(1) ? "text-indigo-600 bg-indigo-50 dark:bg-white/5" : ""
+                  "px-3 py-2 rounded-lg transition hover:opacity-90 focus:outline-none focus-visible:ring-2",
+                  active === n.href.slice(1) ? "text-[var(--accent)] bg-white/60 dark:bg-white/5 ring-[var(--ring)]" : "ring-[var(--ring)]"
                 )}
               >
                 {n.label}
               </a>
             ))}
             {/* Language toggle */}
-            <div className="ml-2 inline-flex rounded-xl border border-gray-300/70 dark:border-gray-700/70 overflow-hidden">
+            <div className="ml-2 inline-flex rounded-xl border border-white/30 dark:border-white/10 overflow-hidden">
               <button
                 aria-label="Switch to English"
                 onClick={() => setLang("en")}
-                className={cn("px-2.5 py-1.5 flex items-center gap-1", lang === "en" && "bg-indigo-600 text-white")}
+                className={cn("px-2.5 py-1.5 flex items-center gap-1", lang === "en" && "bg-[var(--accent)] text-white")}
               >
                 <Globe className="h-3.5 w-3.5" /> EN
               </button>
               <button
                 aria-label="Wechsel zu Deutsch"
                 onClick={() => setLang("de")}
-                className={cn("px-2.5 py-1.5", lang === "de" && "bg-indigo-600 text-white")}
+                className={cn("px-2.5 py-1.5", lang === "de" && "bg-[var(--accent)] text-white")}
               >
                 DE
               </button>
@@ -469,14 +474,14 @@ export default function Portfolio() {
             <a
               href={LINKS.cv}
               download
-              className="ml-2 inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-indigo-600 text-white hover:bg-indigo-700"
+              className="ml-2 inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-white bg-gradient-to-r from-[var(--accent)] to-sky-500 shadow hover:opacity-95 focus-visible:ring-2 ring-[var(--ring)]"
             >
               <Download className="h-4 w-4" aria-hidden={true} /> {t.downloadCV}
             </a>
             <button
               aria-label="Toggle theme"
               onClick={() => setDark((d) => !d)}
-              className="ml-1 inline-flex items-center justify-center w-10 h-10 rounded-lg border border-gray-300/70 dark:border-gray-700/70"
+              className="ml-1 inline-flex items-center justify-center w-10 h-10 rounded-lg border border-white/30 dark:border-white/10"
             >
               {dark ? <Sun className="h-4 w-4" aria-hidden={true} /> : <Moon className="h-4 w-4" aria-hidden={true} />}
             </button>
@@ -484,7 +489,7 @@ export default function Portfolio() {
 
           {/* Hamburger bigger for mobile visibility */}
           <button
-            className="ml-auto md:hidden inline-flex items-center justify-center w-12 h-12 rounded-2xl border bg-white/95 dark:bg-white/10 border-gray-300/70 dark:border-gray-700/70 shadow"
+            className="ml-auto md:hidden inline-flex items-center justify-center w-12 h-12 rounded-2xl border bg-white/90 dark:bg-white/10 border-white/40 shadow"
             aria-label="Open menu"
             onClick={() => setOpen(true)}
           >
@@ -494,65 +499,62 @@ export default function Portfolio() {
         {/* Scroll progress bar */}
         <div className="fixed top-16 left-0 right-0 z-50 h-1 bg-transparent">
           <div
-            className="h-full bg-indigo-600 dark:bg-indigo-500"
+            className="h-full bg-gradient-to-r from-[var(--accent)] to-sky-500"
             style={{ width: `${progress}%` }}
             aria-hidden={true}
           />
         </div>
 
-        {/* Mobile menu overlay: header remains visible */}
+        {/* Full‑screen mobile menu */}
         {open && (
-          <div className="md:hidden fixed inset-x-0 top-16 bottom-0 z-50 bg-black/50" onClick={() => setOpen(false)}>
-            <div
-              className="absolute right-0 top-0 bottom-0 w-[76%] max-w-sm bg-white dark:bg-[#0f0f12] p-6 shadow-xl border-l border-gray-200 dark:border-gray-800 overflow-y-auto"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="flex items-center justify-between mb-6">
+          <div className="md:hidden fixed inset-0 z-[70] bg-[var(--card)] text-[var(--fg)] backdrop-blur">
+            <div className="flex flex-col h-full">
+              <div className="flex items-center justify-between px-6 h-16 border-b border-white/30 dark:border-white/10">
                 <span className="font-semibold">{t.menu}</span>
                 <button
-                  className="inline-flex items-center justify-center w-10 h-10 rounded-xl border border-gray-300/70 dark:border-gray-700/70"
+                  className="inline-flex items-center justify-center w-10 h-10 rounded-xl border border-white/30"
                   aria-label="Close menu"
                   onClick={() => setOpen(false)}
                 >
                   <X className="h-6 w-6" aria-hidden={true} />
                 </button>
               </div>
-              <div className="flex flex-col gap-2">
-                {nav.map((n) => (
-                  <a
-                    key={n.href}
-                    href={n.href}
-                    onClick={(e) => onNavClick(e, n.href)}
-                    className={cn("text-base px-2 py-2 rounded-lg", active === n.href.slice(1) && "bg-white/40 dark:bg-white/5")}
-                  >
-                    {n.label}
-                  </a>
-                ))}
-                <div className="flex gap-2 pt-2">
-                  {/* Lang and theme */}
-                  <div className="inline-flex rounded-xl border border-gray-300/70 dark:border-gray-700/70 overflow-hidden">
-                    <button onClick={() => setLang("en")} className={cn("px-3 py-2 text-sm", lang === "en" && "bg-indigo-600 text-white")}>EN</button>
-                    <button onClick={() => setLang("de")} className={cn("px-3 py-2 text-sm", lang === "de" && "bg-indigo-600 text-white")}>DE</button>
+
+              <nav className="flex-1 overflow-y-auto p-6">
+                <div className="flex flex-col gap-2">
+                  {nav.map((n) => (
+                    <a
+                      key={n.href}
+                      href={n.href}
+                      onClick={(e) => onNavClick(e, n.href)}
+                      className={cn("text-lg px-3 py-3 rounded-lg", active === n.href.slice(1) && "bg-white/40 dark:bg-white/5")}
+                    >
+                      {n.label}
+                    </a>
+                  ))}
+                </div>
+
+                <div className="mt-6 flex items-center gap-3">
+                  <div className="inline-flex rounded-xl border border-white/30 overflow-hidden">
+                    <button onClick={() => setLang("en")} className={cn("px-3 py-2 text-sm", lang === "en" && "bg-[var(--accent)] text-white")}>EN</button>
+                    <button onClick={() => setLang("de")} className={cn("px-3 py-2 text-sm", lang === "de" && "bg-[var(--accent)] text-white")}>DE</button>
                   </div>
                   <button
                     onClick={() => setDark((d) => !d)}
-                    className="inline-flex items-center justify-center w-10 h-10 rounded-xl border border-gray-300/70 dark:border-gray-700/70"
+                    className="inline-flex items-center justify-center w-10 h-10 rounded-xl border border-white/30"
                     aria-label="Toggle theme"
                   >
                     {dark ? <Sun className="h-4 w-4" aria-hidden={true} /> : <Moon className="h-4 w-4" aria-hidden={true} />}
                   </button>
-                </div>
-                <div className="flex gap-2 pt-2">
-                  {/* Download CV inside drawer */}
                   <a
                     href={LINKS.cv}
                     download
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 text-white"
+                    className="ml-auto inline-flex items-center gap-2 px-4 py-2 rounded-xl text-white bg-gradient-to-r from-[var(--accent)] to-sky-500 shadow"
                   >
                     <Download className="h-4 w-4" aria-hidden={true} /> {t.downloadCV}
                   </a>
                 </div>
-              </div>
+              </nav>
             </div>
           </div>
         )}
@@ -571,36 +573,36 @@ export default function Portfolio() {
             height={224}
             loading="eager"
             decoding="async"
-            className="w-40 h-40 md:w-56 md:h-56 rounded-full object-cover ring-4 ring-indigo-600/70 shadow-lg"
+            className="w-40 h-40 md:w-56 md:h-56 rounded-full object-cover ring-4 ring-[var(--accent)]/70 shadow-lg"
           />
           <div className="max-w-3xl">
             <motion.h1
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="text-4xl md:text-6xl font-bold tracking-tight"
+              className="text-4xl md:text-6xl font-semibold tracking-tight"
             >
               {t.heroTitle}
             </motion.h1>
-            <p className="mt-5 text-lg text-gray-700 dark:text-gray-300">{t.heroIntro1}</p>
-            <p className="mt-1 text-lg text-gray-700 dark:text-gray-300">{t.heroIntro2}</p>
+            <p className="mt-5 text-lg opacity-90">{t.heroIntro1}</p>
+            <p className="mt-1 text-lg opacity-90">{t.heroIntro2}</p>
             <div className="mt-7 flex flex-wrap gap-3">
-              {/* View CV with Eye icon, colored */}
+              {/* View CV */}
               <a
                 href={LINKS.cv}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 text-white hover:bg-indigo-700"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-white bg-gradient-to-r from-[var(--accent)] to-sky-500 shadow hover:opacity-95 focus-visible:ring-2 ring-[var(--ring)]"
               >
                 <Eye className="h-4 w-4" aria-hidden={true} /> {t.viewCV}
               </a>
-              <a href={LINKS.linkedIn} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border">
+              <a href={LINKS.linkedIn} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-white/30 backdrop-blur">
                 <Linkedin className="h-4 w-4" aria-hidden={true} /> LinkedIn
               </a>
-              <a href={LINKS.github} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border">
+              <a href={LINKS.github} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-white/30 backdrop-blur">
                 <Github className="h-4 w-4" aria-hidden={true} /> GitHub
               </a>
-              <a href={`mailto:${LINKS.email}`} className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border">
+              <a href={`mailto:${LINKS.email}`} className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-white/30 backdrop-blur">
                 <Mail className="h-4 w-4" aria-hidden={true} /> {t.contact}
               </a>
             </div>
@@ -650,10 +652,10 @@ export default function Portfolio() {
               bullets: ["Migrated end‑to‑end tests from Cypress to Playwright; CI integration."],
             },
           ].map((e) => (
-            <div key={e.title} className="p-6 rounded-3xl border border-gray-200 dark:border-gray-800 bg-white/70 dark:bg-white/5 hover:shadow-md transition">
+            <div key={e.title} className="p-6 rounded-3xl border border-white/30 bg-[var(--card)] backdrop-blur hover:shadow-md transition">
               <h3 className="text-xl font-semibold">{e.title}</h3>
-              <p className="text-sm text-gray-500">{e.sub}</p>
-              <ul className="list-disc list-inside mt-3 text-gray-700 dark:text-gray-300">
+              <p className="text-sm opacity-70">{e.sub}</p>
+              <ul className="list-disc list-inside mt-3 opacity-90">
                 {e.bullets.map((b) => (
                   <li key={b}>{b}</li>
                 ))}
@@ -674,26 +676,26 @@ export default function Portfolio() {
         </div>
         <div className="grid md:grid-cols-2 gap-6">
           {filtered.map((p) => (
-            <div key={p.title} className="group p-6 rounded-3xl border border-gray-200 dark:border-gray-800 bg-white/70 dark:bg-white/5 transition transform hover:-translate-y-1 hover:shadow-md">
+            <div key={p.title} className="group p-6 rounded-3xl border border-white/30 bg-[var(--card)] backdrop-blur transition transform hover:-translate-y-1 hover:shadow-md">
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <h3 className="text-xl font-semibold">{p.title}</h3>
-                  <p className="text-sm text-gray-500">{p.org} • {p.year}</p>
+                  <p className="text-sm opacity-70">{p.org} • {p.year}</p>
                 </div>
                 {p.href && (
-                  <a href={p.href} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-indigo-600 hover:underline">
+                  <a href={p.href} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-[var(--accent)] hover:underline">
                     View <ExternalLink className="h-4 w-4" aria-hidden={true} />
                   </a>
                 )}
               </div>
-              <ul className="list-disc list-inside mt-3 text-gray-700 dark:text-gray-300">
+              <ul className="list-disc list-inside mt-3 opacity-90">
                 {p.bullets.map((b) => (
                   <li key={b}>{b}</li>
                 ))}
               </ul>
               <div className="mt-4 flex flex-wrap gap-2">
                 {p.tags.map((tg) => (
-                  <span key={tg} className="px-2 py-0.5 rounded-md text-xs border border-gray-300/70 dark:border-gray-700/70">{tg}</span>
+                  <span key={tg} className="px-2 py-0.5 rounded-md text-xs border border-white/30 backdrop-blur">{tg}</span>
                 ))}
               </div>
             </div>
@@ -701,130 +703,32 @@ export default function Portfolio() {
         </div>
       </Section>
 
-      {/* ==== Qualifications with tabs (Education, Certs, Thesis, Skills, References) ==== */}
+      {/* ==== Qualifications with tabs ==== */}
       <Section id="qualifications" title={t.sections.qualifications}>
-        <div role="tablist" aria-label="Qualifications tabs" className="flex flex-wrap gap-2 mb-6">
-          {(["education","certs","thesis","skills","refs"] as QualTab[]).map((k) => (
-            <button
-              key={k}
-              role="tab"
-              aria-selected={qtab === k}
-              aria-controls={`panel-${k}`}
-              id={`tab-${k}`}
-              onClick={() => setQtab(k)}
-              className={cn(
-                "px-3 py-1.5 rounded-full border text-sm",
-                qtab === k ? "bg-indigo-600 text-white border-indigo-600" : "border-gray-300/70 dark:border-gray-700/70"
-              )}
-            >
-              {t.qualTabs[k]}
-            </button>
-          ))}
-        </div>
-
-        {/* Panels */}
-        {qtab === "education" && (
-          <div role="tabpanel" id="panel-education" aria-labelledby="tab-education" className="grid md:grid-cols-2 gap-6">
-            <div className="p-6 rounded-3xl border border-gray-200 dark:border-gray-800 bg-white/70 dark:bg-white/5">
-              <h3 className="text-xl font-semibold">Master of Science – Computer Science</h3>
-              <p className="text-sm text-gray-500">Universität Siegen • Siegen, Germany • Oct 2021 – Mar 2025</p>
-              <ul className="list-disc list-inside mt-3 text-gray-700 dark:text-gray-300">
-                <li>Data Science, Full‑Stack, QA Engineering focus.</li>
-                <li>
-                  Thesis: Predictive Maintenance on IoT time‑series.{" "}
-                  <a href={LINKS.thesis} target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline inline-flex items-center gap-1">
-                    Read <ExternalLink className="h-3 w-3" aria-hidden={true} />
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <div className="p-6 rounded-3xl border border-gray-200 dark:border-gray-800 bg-white/70 dark:bg-white/5">
-              <h3 className="text-xl font-semibold">Bachelor of Technology – Computer Science</h3>
-              <p className="text-sm text-gray-500">CUSAT • Kochi, India • 2015 – 2019</p>
-              <ul className="list-disc list-inside mt-3 text-gray-700 dark:text-gray-300">
-                <li>Software Engineering, Algorithms, Databases.</li>
-                <li>Projects in AI and Web Development.</li>
-              </ul>
-            </div>
-          </div>
-        )}
-
-        {qtab === "certs" && (
-          <div role="tabpanel" id="panel-certs" aria-labelledby="tab-certs" className="p-6 rounded-3xl border border-gray-200 dark:border-gray-800 bg-white/70 dark:bg-white/5">
-            <h3 className="text-xl font-semibold">Certifications & Awards</h3>
-            <ul className="space-y-3 mt-3 text-gray-700 dark:text-gray-300">
-              <li>• AWS (Foundational) – cloud foundations & deployment exposure.</li>
-              <li>
-                • IQVIA <span className="font-medium">Silver Award</span>{" "}
-                <a href={LINKS.iqviaSilverAward} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-indigo-600 hover:underline">
-                  <ExternalLink className="h-3 w-3" aria-hidden={true} />
-                </a>
-              </li>
-              <li>• German Language – B1 (in progress).</li>
-            </ul>
-          </div>
-        )}
-
-        {qtab === "thesis" && (
-          <div role="tabpanel" id="panel-thesis" aria-labelledby="tab-thesis" className="p-6 rounded-3xl border border-gray-200 dark:border-gray-800 bg-white/70 dark:bg-white/5">
-            <h3 className="text-xl font-semibold">Thesis</h3>
-            <p className="text-sm text-gray-500">FOXBYTE (CSI Verwaltungs GmbH) • 2023 – 2024</p>
-            <ul className="list-disc list-inside mt-3 text-gray-700 dark:text-gray-300">
-              <li>Predictive Maintenance on IoT time‑series.</li>
-              <li>LSTM/ARIMA/SARIMAX, anomaly detection, dashboards.</li>
-            </ul>
-            <a href={LINKS.thesis} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex items-center gap-2 text-indigo-600 hover:underline">
-              Read thesis <ExternalLink className="h-4 w-4" aria-hidden={true} />
-            </a>
-          </div>
-        )}
-
-        {qtab === "skills" && (
-          <div role="tabpanel" id="panel-skills" aria-labelledby="tab-skills" className="grid grid-cols-2 md:grid-cols-3 gap-3">
-            {["React, TypeScript, Next.js","Python, Django, FastAPI","PostgreSQL, SQL/NoSQL","PyTorch, TensorFlow, ML","Cypress, Playwright, Selenium","Docker, AWS, CI/CD"].map((s) => (
-              <div key={s} className="p-4 rounded-3xl border border-gray-200 dark:border-gray-800 text-center bg-white/70 dark:bg-white/5">{s}</div>
-            ))}
-          </div>
-        )}
-
-        {qtab === "refs" && (
-          <div role="tabpanel" id="panel-refs" aria-labelledby="tab-refs" className="relative p-6 rounded-3xl border border-gray-200 dark:border-gray-800 bg-white/70 dark:bg-white/5">
-            <Quote className="h-6 w-6 text-indigo-600 mb-3" aria-hidden={true} />
-            <p className="italic text-gray-700 dark:text-gray-300 min-h-[72px]">“{quotes[qIndex].text}”</p>
-            <div className="mt-4">
-              <p className="font-semibold">
-                <a href={quotes[qIndex].href} target="_blank" rel="noopener noreferrer" className="hover:underline">
-                  {quotes[qIndex].name}
-                </a>
-              </p>
-              <p className="text-sm text-gray-500">{quotes[qIndex].role}</p>
-            </div>
-            <div className="absolute right-4 top-4 text-xs text-gray-500">{qIndex + 1} / {quotes.length}</div>
-          </div>
-        )}
+        <QualTabs t={t} qtab={qtab} setQtab={setQtab} LINKS={LINKS} quotes={quotes} qIndex={qIndex} />
       </Section>
 
-      {/* ==== Contact (single Gmail CTA) ==== */}
+      {/* ==== Contact ==== */}
       <Section id="contact" title={t.sections.contact}>
         <div className="flex flex-wrap gap-3 items-center">
           <a
             href={`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(LINKS.email)}&su=${encodeURIComponent("Regarding your portfolio")}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-indigo-600 text-white hover:bg-indigo-700"
+            className="inline-flex items-center gap-2 px-5 py-3 rounded-xl text-white bg-gradient-to-r from-[var(--accent)] to-sky-500 shadow hover:opacity-95 focus-visible:ring-2 ring-[var(--ring)]"
           >
             <Mail className="h-5 w-5" aria-hidden={true} /> {t.send}
           </a>
         </div>
-        <p className="mt-6 text-sm text-gray-600 dark:text-gray-500">{t.hint}</p>
-        <p className="mt-2 text-sm text-gray-500">© {new Date().getFullYear()} Suprabhat. All rights reserved.</p>
+        <p className="mt-6 text-sm opacity-70">{t.hint}</p>
+        <p className="mt-2 text-sm opacity-60">© {new Date().getFullYear()} Suprabhat. All rights reserved.</p>
       </Section>
 
       {/* ==== Scroll to top button ==== */}
       {showTop && (
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          className="fixed bottom-24 right-5 z-40 inline-flex items-center gap-1 px-3 py-2 rounded-xl border bg-white/95 dark:bg-black/70 border-gray-200 dark:border-gray-800 shadow"
+          className="fixed bottom-24 right-5 z-40 inline-flex items-center gap-1 px-3 py-2 rounded-xl border border-white/30 bg-[var(--card)] backdrop-blur shadow"
           aria-label="Scroll to top"
         >
           <ArrowUp className="h-4 w-4" aria-hidden={true} /> {t.top}
@@ -833,16 +737,16 @@ export default function Portfolio() {
 
       {/* ==== Mobile floating CV bar ==== */}
       <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 md:hidden">
-        <div className="flex gap-2 rounded-2xl shadow-lg bg-white/95 dark:bg-black/70 border border-gray-200 dark:border-gray-800 p-2">
+        <div className="flex gap-2 rounded-2xl shadow-lg border border-white/30 bg-[var(--card)] backdrop-blur p-2">
           <a
             href={LINKS.cv}
             target="_blank"
             rel="noopener noreferrer"
-            className="px-4 py-2 rounded-xl bg-indigo-600 text-white inline-flex items-center gap-2 hover:bg-indigo-700"
+            className="px-4 py-2 rounded-xl text-white bg-gradient-to-r from-[var(--accent)] to-sky-500 inline-flex items-center gap-2 hover:opacity-95"
           >
             <Eye className="h-4 w-4" aria-hidden={true} /> {t.viewCV}
           </a>
-          <a href={LINKS.cv} download className="px-4 py-2 rounded-xl bg-indigo-600 text-white inline-flex items-center gap-2 hover:bg-indigo-700">
+          <a href={LINKS.cv} download className="px-4 py-2 rounded-xl text-white bg-gradient-to-r from-[var(--accent)] to-sky-500 inline-flex items-center gap-2 hover:opacity-95">
             <Download className="h-4 w-4" aria-hidden={true} /> {t.downloadCV}
           </a>
         </div>
@@ -851,5 +755,111 @@ export default function Portfolio() {
       {/* ==== Command palette UI ==== */}
       <Palette />
     </div>
+  );
+}
+
+// ---- Qualifications tabs component ----
+function QualTabs({ t, qtab, setQtab, LINKS, quotes, qIndex }: any) {
+  return (
+    <>
+      <div role="tablist" aria-label="Qualifications tabs" className="flex flex-wrap gap-2 mb-6">
+        {(["education","certs","thesis","skills","refs"] as const).map((k) => (
+          <button
+            key={k}
+            role="tab"
+            aria-selected={qtab === k}
+            aria-controls={`panel-${k}`}
+            id={`tab-${k}`}
+            onClick={() => setQtab(k)}
+            className={cn(
+              "px-3 py-1.5 rounded-full border text-sm",
+              qtab === k ? "bg-[var(--accent)] text-white border-[var(--accent)]" : "border-white/30 backdrop-blur"
+            )}
+          >
+            {t.qualTabs[k]}
+          </button>
+        ))}
+      </div>
+
+      {qtab === "education" && (
+        <div role="tabpanel" id="panel-education" aria-labelledby="tab-education" className="grid md:grid-cols-2 gap-6">
+          <div className="p-6 rounded-3xl border border-white/30 bg-[var(--card)] backdrop-blur">
+            <h3 className="text-xl font-semibold">Master of Science – Computer Science</h3>
+            <p className="text-sm opacity-70">Universität Siegen • Siegen, Germany • Oct 2021 – Mar 2025</p>
+            <ul className="list-disc list-inside mt-3 opacity-90">
+              <li>Data Science, Full‑Stack, QA Engineering focus.</li>
+              <li>
+                Thesis: Predictive Maintenance on IoT time‑series{' '}
+                <a href={LINKS.thesis} target="_blank" rel="noopener noreferrer" className="text-[var(--accent)] hover:underline inline-flex items-center gap-1">
+                  Read <ExternalLink className="h-3 w-3" aria-hidden={true} />
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div className="p-6 rounded-3xl border border-white/30 bg-[var(--card)] backdrop-blur">
+            <h3 className="text-xl font-semibold">Bachelor of Technology – Computer Science</h3>
+            <p className="text-sm opacity-70">CUSAT • Kochi, India • 2015 – 2019</p>
+            <ul className="list-disc list-inside mt-3 opacity-90">
+              <li>Software Engineering, Algorithms, Databases.</li>
+              <li>Projects in AI and Web Development.</li>
+            </ul>
+          </div>
+        </div>
+      )}
+
+      {qtab === "certs" && (
+        <div role="tabpanel" id="panel-certs" aria-labelledby="tab-certs" className="p-6 rounded-3xl border border-white/30 bg-[var(--card)] backdrop-blur">
+          <h3 className="text-xl font-semibold">Certifications & Awards</h3>
+          <ul className="space-y-3 mt-3 opacity-90">
+            <li>• AWS (Foundational) – cloud foundations & deployment exposure.</li>
+            <li>
+              • IQVIA <span className="font-medium">Silver Award</span>{' '}
+              <a href={LINKS.iqviaSilverAward} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-[var(--accent)] hover:underline">
+                <ExternalLink className="h-3 w-3" aria-hidden={true} />
+              </a>
+            </li>
+            <li>• German Language – B1 (in progress).</li>
+          </ul>
+        </div>
+      )}
+
+      {qtab === "thesis" && (
+        <div role="tabpanel" id="panel-thesis" aria-labelledby="tab-thesis" className="p-6 rounded-3xl border border-white/30 bg-[var(--card)] backdrop-blur">
+          <h3 className="text-xl font-semibold">Thesis</h3>
+          <p className="text-sm opacity-70">FOXBYTE (CSI Verwaltungs GmbH) • 2023 – 2024</p>
+          <ul className="list-disc list-inside mt-3 opacity-90">
+            <li>Predictive Maintenance on IoT time‑series.</li>
+            <li>LSTM/ARIMA/SARIMAX, anomaly detection, dashboards.</li>
+          </ul>
+          <a href={LINKS.thesis} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex items-center gap-2 text-[var(--accent)] hover:underline">
+            Read thesis <ExternalLink className="h-4 w-4" aria-hidden={true} />
+          </a>
+        </div>
+      )}
+
+      {qtab === "skills" && (
+        <div role="tabpanel" id="panel-skills" aria-labelledby="tab-skills" className="grid grid-cols-2 md:grid-cols-3 gap-3">
+          {["React, TypeScript, Next.js","Python, Django, FastAPI","PostgreSQL, SQL/NoSQL","PyTorch, TensorFlow, ML","Cypress, Playwright, Selenium","Docker, AWS, CI/CD"].map((s) => (
+            <div key={s} className="p-4 rounded-3xl border border-white/30 text-center bg-[var(--card)] backdrop-blur">{s}</div>
+          ))}
+        </div>
+      )}
+
+      {qtab === "refs" && (
+        <div role="tabpanel" id="panel-refs" aria-labelledby="tab-refs" className="relative p-6 rounded-3xl border border-white/30 bg-[var(--card)] backdrop-blur">
+          <Quote className="h-6 w-6 text-[var(--accent)] mb-3" aria-hidden={true} />
+          <p className="italic min-h-[72px]">“{quotes[qIndex].text}”</p>
+          <div className="mt-4">
+            <p className="font-semibold">
+              <a href={quotes[qIndex].href} target="_blank" rel="noopener noreferrer" className="hover:underline">
+                {quotes[qIndex].name}
+              </a>
+            </p>
+            <p className="text-sm opacity-70">{quotes[qIndex].role}</p>
+          </div>
+          <div className="absolute right-4 top-4 text-xs opacity-60">{qIndex + 1} / {quotes.length}</div>
+        </div>
+      )}
+    </>
   );
 }
